@@ -4,17 +4,16 @@ import sys
 
 def load_program(filename):
     with open(filename, "rb") as f:
-        g = iter(f.read())
+        g = f.read()
 
-    program = []
-    while True:
-        try:
-            u = next(g)
-            v = next(g)
-        except StopIteration:
-            return program
+    program = [None] * (1<<15)
+    for i in range(0, len(g), 2):
+        u = g[i]
+        v = g[i+1]
 
-        program.append(u + (v << 8))
+        program[i // 2] = (u + (v << 8))
+
+    return program
 
 def handle_input():
     # This function generates input from command line, one char at a time
