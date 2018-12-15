@@ -62,11 +62,14 @@ def read(x):
 def write(x, val):
     registers[x & 0b111] = val
 
+class ProgramExit(Exception):
+    pass
+
 @add_to_op_list(0)
 def halt(p):
     # print("Final registers: {}".format(registers))
     # print("Final stack: {}".format(stack))
-    exit(0)
+    raise ProgramExit
 
 @add_to_op_list(1)
 def set(p):
@@ -177,7 +180,7 @@ def ret(p):
     try:
         val = stack.pop()
     except IndexError:
-        exit(0)
+        raise ProgramExit
     return val
 
 @add_to_op_list(19)
@@ -199,6 +202,9 @@ def run():
     pointer = 0
     while True:
         # print("Calling {}".format(prog[pointer]))
-        pointer = op_list[prog[pointer]](pointer)
+        try:
+            pointer = op_list[prog[pointer]](pointer)
+        except ProgramExit:
+            break
 
 run()
