@@ -6,7 +6,7 @@ def load_program(filename):
     with open(filename, "rb") as f:
         g = f.read()
 
-    program = [None] * (1<<15)
+    program = [None] * ((1<<15) + 8)
     for i in range(0, len(g), 2):
         u = g[i]
         v = g[i+1]
@@ -15,20 +15,27 @@ def load_program(filename):
 
     return program
 
-def handle_input():
+def handle_input(fname=None):
     # This function generates input from command line, one char at a time
-    while True:
-        u = input()
-        for char in u:
-            yield char
-        yield "\n"
+    if fname is not None:
+        with open(fname, 'r') as f:
+            for line in f:
+                print(line, end='')
+                yield from line
 
-handler = handle_input()
+    with open("record", 'w') as f:
+        while True:
+            u = input()
+            f.write(u + "\n")
+            for char in u:
+                yield char
+            yield "\n"
 
 if len(sys.argv) < 2:
     print("Input file required")
     exit(1)
 prog = load_program(sys.argv[1])
+handler = handle_input(sys.argv[2] if 2 < len(sys.argv) else None)
 
 # def reg(x):
 #     return (1 << 15) + x
@@ -39,7 +46,6 @@ prog = load_program(sys.argv[1])
 #         0
 #         ]
 
-registers = [0]*8
 stack = []
 op_list = [None]*22
 
@@ -47,27 +53,27 @@ BITMASK_15 = (1<<15) - 1
 
 def add_to_op_list(i):
     def decorate(f):
-        def new_f(*args):
-            # For debugging
-            # print("Calling op: {}".format(f.__name__))
-            return f(*args)
-        op_list[i] = new_f
+        # def new_f(*args):
+        #     # For debugging
+        #     print("Calling op: {}".format(f.__name__))
+        #     return f(*args)
+        op_list[i] = f
     return decorate
 
 def read(x):
     if x >> 15:
-        return registers[x & 0b111]
+        return prog[x]
     return x
 
 def write(x, val):
-    registers[x & 0b111] = val
+    prog[x] = val
 
 class ProgramExit(Exception):
     pass
 
 @add_to_op_list(0)
 def halt(p):
-    # print("Final registers: {}".format(registers))
+    # print("Final registers: {}".format(prog[-8:]))
     # print("Final stack: {}".format(stack))
     raise ProgramExit
 
@@ -200,11 +206,11 @@ def noop(p):
 
 def run():
     pointer = 0
-    while True:
-        # print("Calling {}".format(prog[pointer]))
-        try:
+    try:
+        while True:
+            # print("Calling {}".format(prog[pointer]))
             pointer = op_list[prog[pointer]](pointer)
-        except ProgramExit:
-            break
+    except ProgramExit:
+        pass
 
 run()
