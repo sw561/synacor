@@ -30,8 +30,6 @@ west
 north
 take red coin
 north
-help
-look monument
 west
 take blue coin
 east
@@ -57,6 +55,8 @@ look
 north
 take teleporter
 use teleporter
-take business card
 take strange book
 look strange book
+set 1
+stat
+use teleporter
