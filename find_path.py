@@ -2,11 +2,17 @@
 
 from collections import deque
 
+ops = {
+    "+": (lambda x, y: x+y),
+    "*": (lambda x, y: x*y),
+    "-": (lambda x, y: x-y),
+    }
+
 m = [
-['*',  '8',  '-',  '1'],
-['4',  '*', '11',  '*'],
-['+',  '4',  '-', '18'],
-['22',  '-',  '9',  '*'],
+['*',   8, '-',   1],
+[  4, '*',  11, '*'],
+['+',   4, '-',  18],
+['O', '-',   9, '*'],
 ]
 
 def unfiltered_neighbours(i, j):
@@ -32,19 +38,19 @@ def find_routes():
         path, (i, j), weight, op = d.popleft()
 
         for direction, x, y in neighbours(i, j):
+            if x == 3 and y == 0:
+                continue
+
             if op is None:
                 new_op = m[x][y]
                 new_weight = weight
             else:
                 new_op = None
-                new_weight = eval("{} {} {}".format(weight, op, m[x][y]))
+                new_weight = ops[op](weight, m[x][y])
 
             new_path = path + direction
 
             if new_weight < 0:
-                continue
-
-            if x == 3 and y == 0:
                 continue
 
             if x == 0 and y == 3:
