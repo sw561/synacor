@@ -2,8 +2,8 @@
 
 import sys
 
-def load_program(filename):
-    with open(filename, "rb") as f:
+def load_program():
+    with open("challenge.bin", "rb") as f:
         g = f.read()
 
     program = [0] * ((1<<15) + 8)
@@ -61,21 +61,21 @@ def process(u):
             yield char
         yield "\n"
 
-if len(sys.argv) < 2:
-    print("Input file required")
-    exit(1)
-prog = load_program(sys.argv[1])
-handler = handle_input(sys.argv[2] if 2 < len(sys.argv) else None)
+prog = load_program()
+handler = handle_input(sys.argv[1] if 1 < len(sys.argv) else None)
 verbose = False
 
-# def reg(x):
-#     return (1 << 15) + x
-# prog = [ 1, reg(0), 101,
-#         20, reg(2),
-#         19, reg(0),
-#         19, reg(2),
+def reg(x):
+    return (1 << 15) + x
+# for i, x in enumerate([ 1, reg(0), 32758,
+#          1, reg(1), 15,
+#          9, reg(2), reg(0), reg(1),
+#          19, reg(0),
+#          19, reg(1),
+#          19, reg(2),
 #         0
-#         ]
+#         ]):
+#     prog[i] = x
 
 stack = []
 op_list = [None]*22
@@ -237,19 +237,28 @@ def run():
     pointer = 0
     try:
         while True:
-            if pointer == 5472:
-                global verbose
-                verbose = True
-            if verbose:
-                x = input()
-                if pointer in [5489, 6027]:
-                    stat()
-                print("Calling", end=' ')
-                display(pointer)
+            # if pointer == 5472:
+            #     global verbose
+            #     verbose = True
+            # if verbose:
+            #     x = input()
+            #     if pointer in [5489, 6027]:
+            #         stat()
+            #     print("Calling", end=' ')
+            #     display(pointer)
 
             pointer = op_list[prog[pointer]](pointer)
     except ProgramExit:
         pass
 
+def remove_safety():
+    new_code_pointer = 32764
+    # Call new function instead of old one
+    prog[5490] = new_code_pointer
+
+    for i, x in enumerate([1, reg(0), 6, 18]):
+        prog[new_code_pointer + i] = x
+
 if __name__=="__main__":
+    remove_safety()
     run()

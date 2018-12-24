@@ -28,4 +28,5 @@ def list_code(h):
 
 h = [0, 5478]
 heapify(h)
+remove_safety()
 list_code(h)

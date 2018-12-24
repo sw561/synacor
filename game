@@ -57,6 +57,34 @@ take teleporter
 use teleporter
 take strange book
 look strange book
-set 1
+set 25734
 stat
 use teleporter
+east
+north
+north
+north
+north
+north
+north
+north
+east
+take journal
+look journal
+west
+north
+north
+take orb
+" east
+" north
+" north
+" north
+" east
+" south
+" south
+" south
+" east
+" north
+" north
+" north
+" vault
