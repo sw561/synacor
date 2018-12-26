@@ -1,5 +1,3 @@
 *.swp
 .vimrc
-arch-spec
-challenge.bin
 *.tgz
