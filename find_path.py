@@ -16,10 +16,10 @@ m = [
 ]
 
 def unfiltered_neighbours(i, j):
-    yield 'N', i-1, j
-    yield 'S', i+1, j
-    yield 'W', i, j-1
-    yield 'E', i, j+1
+    yield 'n', i-1, j
+    yield 's', i+1, j
+    yield 'w', i, j-1
+    yield 'e', i, j+1
 
 def neighbours(i, j):
     for direction, x, y in unfiltered_neighbours(i, j):
@@ -62,6 +62,7 @@ def find_routes():
             d.append((new_path, (x, y), new_weight, new_op))
 
 x = find_routes()
-direction_names = {x[0].upper(): x for x in ["north", "south", "east", "west"]}
+direction_names = {x[0]: x for x in ["north", "south", "east", "west"]}
 
-print("\n".join(direction_names[d] for d in x))
+for d in x:
+    print(direction_names[d])
